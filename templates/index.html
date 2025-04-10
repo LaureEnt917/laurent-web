@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laure Entienne</title>
+    <style>
+        /* Toàn bộ body */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: rgb(61, 12, 12);
+            box-sizing: border-box; /* Đảm bảo padding không làm thay đổi kích thước */
+        }
+
+        /* Container chính */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box; /* Đảm bảo không có khoảng cách không mong muốn */
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Form nhập thông tin */
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box; /* Đảm bảo padding không làm tăng kích thước */
+        }
+
+        .form-container button {
+            width: 100%;
+            padding: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-sizing: border-box;
+        }
+
+        .form-container button:hover {
+            background-color: #0056b3;
+        }
+
+        .flash-message {
+            color: red;
+            text-align: center;
+        }
+
+        /* Thẻ học sinh */
+        .student-card {
+            background-color: white;
+            width: 100%; /* Chiều rộng 100% giúp thẻ chiếm hết không gian */
+            max-width: 600px; /* Điều chỉnh chiều rộng tối đa */
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            padding: 30px;
+            margin: 0 auto;
+            margin-bottom: 20px;
+            box-sizing: border-box; /* Đảm bảo padding không làm thay đổi kích thước */
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin: 10px 0;
+        }
+
+        .points {
+            font-size: 18px;
+            color: #666;
+        }
+
+        .class {
+            font-size: 18px;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .quote {
+            font-size: 16px;
+            font-style: italic;
+            color: #888;
+            margin-top: 15px;
+        }
+
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Phần ảnh nền */
+        .background-image-section {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Laure Entienne</h1>
+
+        <!-- Form để cộng điểm (Thêm điểm) -->
+        <div class="form-container">
+            <form action="{{ url_for('add_points') }}" method="POST">
+                <input type="text" name="name" placeholder="Tên học sinh" required>
+                <input type="text" name="class" placeholder="Lớp học" required>
+                <input type="text" name="points" placeholder="Điểm" required>
+                <input type="text" name="link" placeholder="Link nhóm Facebook" required>
+                <input type="text" name="avatar" placeholder="URL ảnh đại diện" required>
+                <input type="text" name="quote" placeholder="Câu trích dẫn" required>
+                <!-- Thêm trường nhập cho ảnh cảnh -->
+                <input type="text" name="background_image" placeholder="URL ảnh cảnh nền" required>
+                <button type="submit">Cộng Điểm</button>
+            </form>
+        </div>
+
+        <!-- Form để xem tổng điểm -->
+        <div class="form-container">
+            <form action="{{ url_for('total_points') }}" method="GET">
+                <input type="text" name="name" placeholder="Nhập tên học sinh để xem tổng điểm" required>
+                <button type="submit">Xem Tổng Điểm</button>
+            </form>
+        </div>
+
+        <!-- Hiển thị thông báo nếu có -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flash-message">
+                    {% for category, message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Hiển thị thông tin học sinh nếu có -->
+        {% if name %}
+            <div class="student-card">
+                <!-- Ảnh cảnh nền -->
+                <div class="background-image-section">
+                    <img src="{{ session.get('background_image', 'https://via.placeholder.com/800x400') }}" alt="Background Image">
+                </div>
+
+                <!-- Ảnh đại diện học sinh -->
+                <img src="{{ avatar_url }}" alt="Avatar" class="avatar">
+                <!-- Hiển thị tên học sinh -->
+                <h2>{{ name }}</h2>
+                <!-- Hiển thị lớp học -->
+                <p class="class">Lớp: {{ class_name }}</p>
+                <!-- Hiển thị tổng điểm -->
+                <p class="points">Tổng điểm: {{ total_points }}</p>
+                <!-- Hiển thị câu trích dẫn nếu có -->
+                {% if quote %}
+                    <p class="quote">"{{ quote }}"</p>
+                {% endif %}
+                <!-- Nút quay lại trang chủ -->
+                <a href="{{ url_for('index') }}" class="back-button">Quay lại trang chủ</a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
