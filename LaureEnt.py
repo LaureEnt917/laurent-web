@@ -4,6 +4,8 @@ from oauth2client.service_account import ServiceAccountCredentials
 import qrcode
 import sys
 import io
+import os
+import json
 
 # Đặt encoding của stdout thành utf-8
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -14,7 +16,13 @@ app.secret_key = 'your_secret_key'  # Dùng để flash messages
 
 # Cấu hình Google Sheets API
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-CREDS = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', SCOPE)
+
+if os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"):
+    creds_dict = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
+    CREDS = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
+else:
+    CREDS = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', SCOPE)
+
 client = gspread.authorize(CREDS)
 
 # Truy cập vào Google Sheets
@@ -63,7 +71,6 @@ def add_points():
         flash('Link phải là link của nhóm Facebook cụ thể!', 'error')
         return redirect(url_for('index'))
 
-    # Lưu điểm và các thông tin vào Google Sheets
     save_data_to_sheet(name, class_name, points, link, avatar_url, quote, background_image)
 
     flash(f"Đã cộng {points} điểm cho {name}", 'success')
@@ -120,6 +127,8 @@ def total_points():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+
 
 
 
