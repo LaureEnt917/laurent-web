@@ -17,8 +17,10 @@ app.secret_key = 'your_secret_key'  # Dùng để flash messages
 # Cấu hình Google Sheets API
 SCOPE = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
-if os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"):
-    creds_dict = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
+GOOGLE_CREDS_ENV = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
+
+if GOOGLE_CREDS_ENV:
+    creds_dict = json.loads(GOOGLE_CREDS_ENV)
     CREDS = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
 else:
     CREDS = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', SCOPE)
@@ -127,6 +129,7 @@ def total_points():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
