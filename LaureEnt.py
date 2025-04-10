@@ -22,7 +22,7 @@ GOOGLE_CREDS_ENV = os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")
 
 if GOOGLE_CREDS_ENV:
     try:
-        creds_dict = json.loads(GOOGLE_CREDS_ENV)
+        creds_dict = json.loads(GOOGLE_CREDS_ENV)  # Parse chuỗi JSON
         CREDS = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, SCOPE)
     except json.JSONDecodeError as e:
         print(f"Error decoding JSON: {e}")
@@ -134,6 +134,7 @@ def total_points():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
 
 
